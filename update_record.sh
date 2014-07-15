@@ -33,14 +33,24 @@ HOSTEDZONE=https://route53.amazonaws.com/2013-04-01/hostedzone
 # (e.g. http://www.myglobalip.com/)
 NEWIP=YOURGLOBALIP
 
-function updaterecord ()
+# This function makes XML and POST it.
+#
+# When "update" argument is given,
+# Add processing to delete the existing A record.
+# Otherwise, please give "create" argument.
+# But the argument is not checked.
+function postxml ()
 {
-    UPDATE=$(mktemp /tmp/update-XXXXXX.xml)
-    cat > $UPDATE <<EOF
+    XMLFILE=$(mktemp /tmp/r53-XXXXXX.xml)
+    cat > $XMLFILE <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <ChangeResourceRecordSetsRequest xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
   <ChangeBatch>
     <Changes>
+EOF
+    if [ $1 = "update" ]; then
+        echo "delete existing A record."
+        cat >> $XMLFILE <<EOF
       <Change>
         <Action>DELETE</Action>
         <ResourceRecordSet>
@@ -54,56 +64,29 @@ function updaterecord ()
           </ResourceRecords>
         </ResourceRecordSet>
       </Change>
-      <Change>
-        <Action>CREATE</Action>
-        <ResourceRecordSet>
-          <Name>${ARECORD}</Name>
-          <Type>A</Type>
-          <TTL>${TTL}</TTL>
-          <ResourceRecords>
-            <ResourceRecord>
-              <Value>${NEWIP}</Value>
-            </ResourceRecord>
-          </ResourceRecords>
-        </ResourceRecordSet>
-      </Change>
-    </Changes>
-  </ChangeBatch>
-</ChangeResourceRecordSetsRequest>
 EOF
-    echo "update A record."
-    $DNSCURL --keyname $KEYNAME -- -H "Content-Type: text/xml; charset=UTF-8" -X POST --upload-file $UPDATE $HOSTEDZONE/$ZONEID/rrset
-    rm $UPDATE
-}
-
-function createrecord ()
-{
-    CREATE=$(mktemp /tmp/create-XXXXXX.xml)
-    cat > $CREATE <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<ChangeResourceRecordSetsRequest xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
-  <ChangeBatch>
-    <Changes>
-      <Change>
-        <Action>CREATE</Action>
-        <ResourceRecordSet>
-          <Name>${ARECORD}</Name>
-          <Type>A</Type>
-          <TTL>${TTL}</TTL>
-          <ResourceRecords>
-            <ResourceRecord>
-              <Value>${NEWIP}</Value>
-            </ResourceRecord>
-          </ResourceRecords>
-        </ResourceRecordSet>
-      </Change>
-    </Changes>
-  </ChangeBatch>
-</ChangeResourceRecordSetsRequest>
-EOF
+    fi
     echo "create A record."
-    $DNSCURL --keyname $KEYNAME -- -H "Content-Type: text/xml; charset=UTF-8" -X POST --upload-file $CREATE $HOSTEDZONE/$ZONEID/rrset
-    rm $CREATE
+    cat >> $XMLFILE <<EOF
+      <Change>
+        <Action>CREATE</Action>
+        <ResourceRecordSet>
+          <Name>${ARECORD}</Name>
+          <Type>A</Type>
+          <TTL>${TTL}</TTL>
+          <ResourceRecords>
+            <ResourceRecord>
+              <Value>${NEWIP}</Value>
+            </ResourceRecord>
+          </ResourceRecords>
+        </ResourceRecordSet>
+      </Change>
+    </Changes>
+  </ChangeBatch>
+</ChangeResourceRecordSetsRequest>
+EOF
+    $DNSCURL --keyname $KEYNAME -- -H "Content-Type: text/xml; charset=UTF-8" -X POST --upload-file $XMLFILE $HOSTEDZONE/$ZONEID/rrset
+    rm $XMLFILE
 }
 
 if [ ! -x /usr/bin/hxselect ]; then
@@ -136,13 +119,15 @@ if [ $(echo $RESPONSE | hxselect -c Name) = $ARECORD ]; then
         if [ $NEWIP = $CURRENTIP ]; then
             echo "IP address did not change."
         else
-            updaterecord
+            postxml "update"
         fi
     else
+        # Create new record.
         echo "$ARECORD already exists. but A record does not exist."
-        createrecord
+        postxml "create"
     fi
 else
     # When a record of "$ARECORD" does not exist on Route 53.
-    createrecord
+    # Create new record.
+    postxml "create"
 fi
