@@ -41,7 +41,7 @@ NEW_RR_VALUE=YOURGLOBALIP
 # But the argument is not checked.
 function postxml ()
 {
-    XMLFILE=$(mktemp /tmp/r53-XXXXXX.xml)
+    local XMLFILE=$(mktemp /tmp/r53-XXXXXX.xml)
     cat > $XMLFILE <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <ChangeResourceRecordSetsRequest xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
