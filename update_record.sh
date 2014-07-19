@@ -21,17 +21,15 @@
 #
 #  0. You just DO WHAT THE FUCK YOU WANT TO.
 
-# Please set the following variables to your environment.
-DNSCURL=./dnscurl.pl           # path of dnscurl.pl
-KEYNAME=your-key-name          # your key name in .aws-secrets
-TTL=300                        # TTL of this record
-NAME=www.example.com.          # Target A record
-ZONEID=YOURZONEID              # your zone ID
-HOSTEDZONE=https://route53.amazonaws.com/2013-04-01/hostedzone
+# Please edit the following config file for your environment.
+CONFFILE=${1:-./ddns-route53.conf}
 
-# Please check and set your global IP address by any method.
-# (e.g. http://www.myglobalip.com/)
-NEW_RR_VALUE=YOURGLOBALIP
+if [ ! -r "$CONFFILE" ]; then
+    echo "$CONFFILE does not exist or unreadable."
+    exit 1
+fi
+
+source $CONFFILE
 
 # This function makes XML and POST it.
 #
