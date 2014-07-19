@@ -25,7 +25,7 @@
 CONFFILE=${1:-./ddns-route53.conf}
 
 if [ ! -r "$CONFFILE" ]; then
-    echo "$CONFFILE does not exist or unreadable."
+    $LOGGER "$CONFFILE does not exist or unreadable."
     exit 1
 fi
 
@@ -47,7 +47,7 @@ function postxml ()
     <Changes>
 EOF
     if [ $1 = "update" ]; then
-        echo "delete existing A record."
+        $LOGGER "delete existing A record."
         cat >> $XMLFILE <<EOF
       <Change>
         <Action>DELETE</Action>
@@ -64,7 +64,7 @@ EOF
       </Change>
 EOF
     fi
-    echo "create A record."
+    $LOGGER "create A record."
     cat >> $XMLFILE <<EOF
       <Change>
         <Action>CREATE</Action>
@@ -89,8 +89,8 @@ EOF
 
 HXSELECT=${HXSELECT:-$(which hxselect)}
 if [ ! -x "$HXSELECT" ]; then
-    echo "hxselect not exist."
-    echo "Please install html-xml-utils package."
+    $LOGGER "hxselect not exist."
+    $LOGGER "Please install html-xml-utils package."
     exit 1
 fi
 
@@ -102,7 +102,7 @@ if [ "$(echo $RESPONSE | $HXSELECT -c Name)" = "$NAME" ]; then
     # This script finished without doing anything.
     # Because CNAME record is not allowed to coexist with any other data (RFC1912).
     if [ "$(echo $RESPONSE | $HXSELECT -c Type)" = "CNAME" ]; then
-        echo "CNAME already exists."
+        $LOGGER "CNAME already exists."
         exit
     fi
 
@@ -116,13 +116,13 @@ if [ "$(echo $RESPONSE | $HXSELECT -c Name)" = "$NAME" ]; then
         # If record on Route53 is the same as the current IP address.
         # Skip an update process.
         if [ "$NEW_RR_VALUE" = "$OLD_RR_VALUE" ]; then
-            echo "IP address did not change."
+            $LOGGER "IP address did not change."
         else
             postxml "update"
         fi
     else
         # Create new record.
-        echo "$NAME already exists. but A record does not exist."
+        $LOGGER "$NAME already exists. but A record does not exist."
         postxml "create"
     fi
 else
