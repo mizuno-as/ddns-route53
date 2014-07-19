@@ -31,7 +31,7 @@ HOSTEDZONE=https://route53.amazonaws.com/2013-04-01/hostedzone
 
 # Please check and set your global IP address by any method.
 # (e.g. http://www.myglobalip.com/)
-NEWIP=YOURGLOBALIP
+NEW_RR_VALUE=YOURGLOBALIP
 
 # This function makes XML and POST it.
 #
