@@ -25,7 +25,7 @@
 CONFFILE=${1:-./ddns-route53.conf}
 
 if [ ! -r "$CONFFILE" ]; then
-    $LOGGER "$CONFFILE does not exist or unreadable."
+    echo "$CONFFILE does not exist or unreadable." 1>&2
     exit 1
 fi
 
@@ -89,8 +89,8 @@ EOF
 
 HXSELECT=${HXSELECT:-$(which hxselect)}
 if [ ! -x "$HXSELECT" ]; then
-    $LOGGER "hxselect not exist."
-    $LOGGER "Please install html-xml-utils package."
+    echo "hxselect not exist." 1>&2
+    echo "Please install html-xml-utils package." 1>&2
     exit 1
 fi
 
