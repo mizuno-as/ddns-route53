@@ -5,12 +5,10 @@
 # Some code is licensed under a WTFPL license to the following
 # copyright holders:
 #
-# Copyright (c) 2014 Hajime MIZUNO <mizuno-as@ubuntu.com>
-#
 #            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
 #                    Version 2, December 2004
 #
-# Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+# Copyright (c) 2014 Hajime MIZUNO <mizuno-as@ubuntu.com>
 #
 # Everyone is permitted to copy and distribute verbatim or modified
 # copies of this license document, and changing it is allowed as long
