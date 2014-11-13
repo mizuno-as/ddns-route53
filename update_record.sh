@@ -2,22 +2,12 @@
 #
 # This script deliver dynamic DNS in Amazon Route 53.
 #
-# Some code is licensed under a WTFPL license to the following
-# copyright holders:
-#
-#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-#                    Version 2, December 2004
-#
 # Copyright (c) 2014 Hajime MIZUNO <mizuno-as@ubuntu.com>
 #
-# Everyone is permitted to copy and distribute verbatim or modified
-# copies of this license document, and changing it is allowed as long
-# as the name is changed.
+# This work is free. You can redistribute it and/or modify it under the
+# terms of the Do What The Fuck You Want To Public License, Version 2,
+# as published by Sam Hocevar. See the COPYING file for more details.
 #
-#            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
-#   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
-#
-#  0. You just DO WHAT THE FUCK YOU WANT TO.
 
 # Please edit the following config file for your environment.
 CONFFILE=${1:-./ddns-route53.conf}
