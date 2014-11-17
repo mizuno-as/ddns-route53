@@ -19,6 +19,13 @@ fi
 
 source $CONFFILE
 
+# Check ~/.aws-secrets permission
+PERMISSION=$(stat -L -c '%a' .aws-secrets)
+if [ "$PERMISSION" != "600" ]; then
+    $LOGGER "set your credentials mode to 600."
+    exit 1
+fi
+
 # This function makes XML and POST it.
 #
 # When "update" argument is given,
@@ -77,8 +84,8 @@ EOF
 
 HXSELECT=${HXSELECT:-$(which hxselect)}
 if [ ! -x "$HXSELECT" ]; then
-    echo "hxselect not exist." 1>&2
-    echo "Please install html-xml-utils package." 1>&2
+    $LOGGER "hxselect not exist." 1>&2
+    $LOGGER "Please install html-xml-utils package." 1>&2
     exit 1
 fi
 
