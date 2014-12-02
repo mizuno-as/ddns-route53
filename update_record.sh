@@ -57,3 +57,4 @@ cat > $JSONFILE <<EOF
 EOF
 
 ${AWSCLI} --profile ${KEYNAME} route53 change-resource-record-sets --hosted-zone-id ${ZONEID} --change-batch file://${JSONFILE}
+rm $JSONFILE
