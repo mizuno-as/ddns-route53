@@ -50,4 +50,7 @@ cat > $JSONFILE <<EOF
 EOF
 
 ${AWSCLI} --profile ${KEYNAME} route53 change-resource-record-sets --hosted-zone-id ${ZONEID} --change-batch file://${JSONFILE}
+if [ $? -eq 0 ]; then
+    $LOGGER "UPSERT: ${NAME}, ${NEW_RR_VALUE}"
+fi
 rm $JSONFILE
