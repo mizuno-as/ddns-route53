@@ -27,13 +27,6 @@ if [ ! -x "$AWSCLI" ]; then
     exit 1
 fi
 
-JSHON=${JSHON:-$(which jshon)}
-if [ ! -x "$JSHON" ]; then
-    $LOGGER "jshon command not exist." 1>&2
-    $LOGGER "Please install jshon package." 1>&2
-    exit 1
-fi
-
 JSONFILE=$(mktemp /tmp/r53-XXXXXX.json)
 cat > $JSONFILE <<EOF
 {
